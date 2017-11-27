@@ -1,6 +1,10 @@
-from flask import Flask, render_template, make_response, request, url_for
+from flask import Flask, render_template, request, url_for, jsonify
 import os
+from flask_cors import CORS, cross_origin
+import base64
+
 app =Flask(__name__)
+CORS(app)
 
 @app.route("/")
 def index():
@@ -9,20 +13,20 @@ def index():
 
 @app.route("/apple", methods=['POST'])
 def apple_BtoA():
-    if request.method == 'POST':
-        print(request.form['data'])
-
-        input_data = request.form['data']
-        img_path = url_for('static', filename='temps/')
-        img_input = open(os.path.join(img_path, 'input.png'), 'wb')
-        img_input.write(input_data)
-        img_input.close()
-        # a = {"model_dir": os.path.join('models/apple'), "input_file": os.path.join('static/input.png'),
-        #      "output_file": os.path.join('static/output.png')}
-        # main(a)
-        # output = open(os.path.join('static/output.png'), 'r')
-        # response = output.read()
-        return request.data
+    input_data = request.json
+    img_path = url_for('static', filename='temps/')
+    img_input = open('input.jpg', 'wb')
+    # img_input = open(os.path.join(img_path, 'input.jpg'), 'wb')
+    img_input.write(base64.b64decode(input_data))
+    img_input.close()
+    # a = {"model_dir": os.path.join('models/apple'), "input_file": os.path.join('static/input.png'),
+    #      "output_file": os.path.join('static/output.png')}
+    # # main(a)
+    # output = open(os.path.join('static/output.png'), 'r')
+    response = open('input.jpg', 'r').read()
+    import pdb;pdb.set_trace()
+    print(response)
+    return jsonify(response=base64.b64encode(input_data))
 
 
 if __name__ == "__main__":

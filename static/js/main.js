@@ -13,6 +13,8 @@ function init() {
     ctx = canvas.getContext("2d");
     w = canvas.width;
     h = canvas.height;
+    ctx.fillStyle = "white";
+    ctx.fillRect(currX, currY, w, h);
 
     canvas.addEventListener("mousemove", function (e) {
         findxy('move', e)
@@ -103,19 +105,33 @@ $( ".well" ).click(function() {
 
 // process render image
 
-var canvas = $('canvas')[0];
-var input_b64 = canvas.toDataURL("image/png").replace(/^data:image\/png;base64,/, "")
+
 var URL = 'http://127.0.0.1:5000/'
-//var URL = 'http://localhost:5000/'
-var data = {
-        'data' : b64_to_bin(input_b64)
-    };
-$("#process").click(function(){
-    $.post(URL + 'apple', data,
-    function(data, status){
-        alert("Data: " + data + "\nStatus: " + status);
+
+$("#process").click(function(e) {
+    var canvas = $('canvas')[0];
+    var input_b64 = canvas.toDataURL("image/png").replace(/^data:image\/png;base64,/, "")
+    console.log(canvas.toDataURL("image/jpeg"))
+//    addSurveysForm.find('div[id=continueSendSurveys]').modal("hide");
+//    addSurveysForm.find('a[id=buttonContinueSendSurveys]').attr('disabled', true).addClass('loading');
+//    addSurveysForm.find('a[id=buttonContinueSendSurveys]').removeAttr("data-toggle").removeAttr("data-target");
+    $.ajax({
+        type: "POST",
+        data: JSON.stringify(input_b64, null, '\t'),
+        contentType: 'application/json;charset=UTF-8',
+        url: URL + 'apple',
+        success: function(data) {
+            alert(data.response)
+        },
     });
 });
+//
+//$("#process").click(function(){
+//    $.post(URL + 'apple', data,
+//    function(data, status){
+//        alert("Data: " + data + "\nStatus: " + status);
+//    });
+//});
 
 function b64_to_bin(str) {
   var binstr = atob(str)
